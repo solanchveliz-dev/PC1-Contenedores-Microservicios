@@ -1,0 +1,46 @@
+# Etapa 1: construcción de las dependencias
+FROM python:3.11-alpine AS builder
+
+WORKDIR /build
+
+COPY requirements.txt .
+
+# Las dependencias se instalan en un entorno virtual independiente
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install \
+       --no-cache-dir \
+       -r requirements.txt
+
+
+# Etapa 2: imagen final para ejecutar la aplicación
+FROM python:3.11-alpine
+
+LABEL maintainer="solanch.veliz@tecsup.edu.pe"
+LABEL description="Registro electoral - imagen multistage"
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /app
+
+# Se copian únicamente las dependencias instaladas
+COPY --from=builder /opt/venv /opt/venv
+
+# Se copia la aplicación
+COPY app.py .
+COPY templates ./templates
+
+# Usuario sin privilegios para mejorar la seguridad
+RUN adduser -D appuser \
+    && mkdir -p /app/datos \
+    && chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+
+CMD ["python", "app.py"]

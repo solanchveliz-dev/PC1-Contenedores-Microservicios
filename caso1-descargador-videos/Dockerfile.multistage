@@ -1,0 +1,52 @@
+# Etapa 1: instala las dependencias de Python
+FROM python:3.11-alpine AS builder
+
+WORKDIR /build
+
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    linux-headers
+
+COPY requirements.txt .
+
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install \
+       --no-cache-dir \
+       --pre \
+       -r requirements.txt
+
+
+# Etapa 2: crea la imagen final
+FROM python:3.11-alpine
+
+LABEL maintainer="solanch.veliz@tecsup.edu.pe"
+LABEL description="Descargador de videos con construcción multistage"
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN apk add --no-cache \
+    ca-certificates \
+    deno \
+    ffmpeg
+
+WORKDIR /app
+
+COPY --from=builder /opt/venv /opt/venv
+COPY app.py .
+COPY templates ./templates
+
+RUN adduser -D appuser \
+    && mkdir -p /app/descargas \
+    && chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+
+CMD ["python", "app.py"]
