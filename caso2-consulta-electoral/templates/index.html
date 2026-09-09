@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registro Electoral</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            color: #eaf6ff;
+            background:
+                radial-gradient(circle at top right, #075985 0%, transparent 35%),
+                linear-gradient(135deg, #071a2b, #0b2942);
+        }
+
+        .contenedor {
+            width: min(1150px, 100%);
+            margin: auto;
+        }
+
+        header {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+        }
+
+        header p {
+            color: #b9d8ea;
+            font-size: 1.05rem;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            margin-bottom: 16px;
+            padding: 8px 15px;
+            color: #bdeeff;
+            border: 1px solid #1d7899;
+            border-radius: 999px;
+            background: rgba(14, 116, 144, 0.2);
+        }
+
+        .aviso {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #27799b;
+            border-radius: 16px;
+            background: rgba(7, 32, 50, 0.8);
+        }
+
+        .aviso h2 {
+            margin-bottom: 9px;
+            font-size: 1.15rem;
+        }
+
+        .aviso p {
+            color: #bdd7e6;
+            line-height: 1.6;
+        }
+
+        .enlace-onpe {
+            display: inline-block;
+            margin-top: 13px;
+            padding: 11px 18px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 10px;
+            background: #0284c7;
+        }
+
+        .enlace-onpe:hover {
+            background: #0369a1;
+        }
+
+        .rejilla {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 24px;
+        }
+
+        .tarjeta {
+            padding: 28px;
+            border: 1px solid #205b75;
+            border-radius: 20px;
+            background: rgba(5, 25, 40, 0.92);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        .tarjeta h2 {
+            margin-bottom: 22px;
+        }
+
+        .grupo {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d5eafa;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            color: white;
+            font-size: 1rem;
+            border: 1px solid #26617c;
+            border-radius: 10px;
+            outline: none;
+            background: #081f31;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        option {
+            color: white;
+            background: #081f31;
+        }
+
+        .ubicacion {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        button,
+        .boton-excel {
+            width: 100%;
+            display: block;
+            padding: 14px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 11px;
+            cursor: pointer;
+        }
+
+        button {
+            margin-top: 8px;
+            background: linear-gradient(90deg, #0891b2, #2563eb);
+        }
+
+        button:hover {
+            filter: brightness(1.12);
+        }
+
+        .boton-excel {
+            margin-bottom: 18px;
+            background: #16834b;
+        }
+
+        .boton-excel:hover {
+            background: #106a3c;
+        }
+
+        .mensaje,
+        .error {
+            margin-bottom: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        .mensaje {
+            color: #c8f7dc;
+            border: 1px solid #238755;
+            background: rgba(22, 101, 52, 0.25);
+        }
+
+        .error {
+            color: #ffd5d5;
+            border: 1px solid #b94c58;
+            background: rgba(127, 29, 29, 0.25);
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #214b61;
+        }
+
+        th {
+            color: #9cdbf5;
+            background: #0b2d45;
+        }
+
+        td {
+            color: #d8eaf4;
+        }
+
+        .estado-si,
+        .estado-no {
+            display: inline-block;
+            padding: 5px 9px;
+            font-weight: bold;
+            border-radius: 999px;
+        }
+
+        .estado-si {
+            color: #b9f6d0;
+            background: rgba(22, 163, 74, 0.25);
+        }
+
+        .estado-no {
+            color: #d1d5db;
+            background: rgba(107, 114, 128, 0.25);
+        }
+
+        .vacio {
+            padding: 35px 10px;
+            color: #9db9c9;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 25px;
+            color: #83a9bd;
+            text-align: center;
+        }
+
+        @media (max-width: 850px) {
+            .rejilla {
+                grid-template-columns: 1fr;
+            }
+
+            .ubicacion {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="contenedor">
+        <header>
+            <div class="etiqueta">Caso 2 · Aplicación ejecutada con Docker</div>
+            <h1>Registro de miembros de mesa</h1>
+            <p>Consulta el resultado oficial y registra la información en Excel.</p>
+        </header>
+
+        <section class="aviso">
+            <h2>1. Realiza primero la consulta oficial</h2>
+
+            <p>
+                Ingresa al portal oficial de consulta electoral, consulta el DNI
+                y después registra el resultado obtenido en este formulario.
+            </p>
+
+            <a
+                class="enlace-onpe"
+                href="https://consultaelectoral.onpe.gob.pe/inicio"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Abrir portal oficial de ONPE
+            </a>
+        </section>
+
+        {% if mensaje %}
+            <div class="mensaje">{{ mensaje }}</div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div class="rejilla">
+            <section class="tarjeta">
+                <h2>2. Registrar resultado</h2>
+
+                <form method="POST">
+                    <div class="grupo">
+                        <label for="dni">DNI</label>
+
+                        <input
+                            id="dni"
+                            name="dni"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="8"
+                            pattern="[0-9]{8}"
+                            placeholder="Ingresa 8 números"
+                            required
+                        >
+                    </div>
+
+                    <div class="grupo">
+                        <label for="miembro">¿Es miembro de mesa?</label>
+
+                        <select id="miembro" name="miembro" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div id="datos-electorales">
+                        <div class="grupo">
+                            <label for="nombres">Nombres y apellidos</label>
+
+                            <input
+                                id="nombres"
+                                name="nombres"
+                                type="text"
+                                placeholder="Nombre mostrado en la consulta"
+                            >
+                        </div>
+
+                        <div class="ubicacion">
+                            <div class="grupo">
+                                <label for="region">Región</label>
+                                <input id="region" name="region" type="text">
+                            </div>
+
+                            <div class="grupo">
+                                <label for="provincia">Provincia</label>
+                                <input id="provincia" name="provincia" type="text">
+                            </div>
+
+                            <div class="grupo">
+                                <label for="distrito">Distrito</label>
+                                <input id="distrito" name="distrito" type="text">
+                            </div>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="direccion">
+                                Dirección del local de votación
+                            </label>
+
+                            <input
+                                id="direccion"
+                                name="direccion"
+                                type="text"
+                                placeholder="Dirección indicada por ONPE"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit">Guardar registro en Excel</button>
+                </form>
+            </section>
+
+            <section class="tarjeta">
+                <h2>3. Registros guardados</h2>
+
+                <a class="boton-excel" href="/descargar-excel">
+                    Descargar archivo Excel
+                </a>
+
+                {% if registros %}
+                    <div class="tabla-contenedor">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>Miembro</th>
+                                    <th>Nombres</th>
+                                    <th>Ubicación</th>
+                                    <th>Dirección</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for registro in registros %}
+                                    <tr>
+                                        <td>{{ registro[0] }}</td>
+
+                                        <td>
+                                            <span class="{{
+                                                'estado-si'
+                                                if registro[1] == 'Sí'
+                                                else 'estado-no'
+                                            }}">
+                                                {{ registro[1] }}
+                                            </span>
+                                        </td>
+
+                                        <td>{{ registro[2] }}</td>
+
+                                        <td>
+                                            {{ registro[3] }} /
+                                            {{ registro[4] }} /
+                                            {{ registro[5] }}
+                                        </td>
+
+                                        <td>{{ registro[6] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="vacio">
+                        Todavía no existen registros en el archivo Excel.
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+
+        <footer>
+            Contenedor: {{ hostname }}
+        </footer>
+    </main>
+
+    <script>
+        const selectorMiembro = document.getElementById("miembro");
+        const datosElectorales = document.getElementById("datos-electorales");
+
+        function actualizarCampos() {
+            const esMiembro = selectorMiembro.value === "Sí";
+
+            datosElectorales.style.display =
+                selectorMiembro.value === "No" ? "none" : "block";
+
+            datosElectorales
+                .querySelectorAll("input")
+                .forEach((campo) => {
+                    campo.required = esMiembro;
+                });
+        }
+
+        selectorMiembro.addEventListener("change", actualizarCampos);
+        actualizarCampos();
+    </script>
+</body>
+</html>

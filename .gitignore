@@ -1,0 +1,21 @@
+# Entornos virtuales
+venv/
+.venv/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de macOS
+.DS_Store
+
+# Datos generados por las aplicaciones
+*.xlsx
+*.xls
+caso1-descargador-videos/downloads/*
+
+# Conservar carpetas vacías
+!caso1-descargador-videos/downloads/.gitkeep
+!caso2-consulta-electoral/datos/.gitkeep
+
