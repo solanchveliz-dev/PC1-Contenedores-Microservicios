@@ -1,0 +1,14 @@
+services:
+  descargador:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage
+    image: descargador-videos:latest
+    container_name: descargador-videos
+    ports:
+      - "8000:5000"
+    environment:
+      - PORT=5000
+    volumes:
+      - ./descargas:/app/descargas
+    restart: unless-stopped
